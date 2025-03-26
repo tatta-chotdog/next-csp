@@ -65,32 +65,55 @@ const Test: React.FC = () => {
   return (
     <div
       style={{
-        padding: "20px",
-        background: "#d1c4e9",
-        minHeight: "100vh",
+        padding: "40px",
+        background: "var(--background)",
+        minHeight: "calc(100vh - 60px)",
         textAlign: "center",
       }}
     >
-      <h1 style={{ color: "#ff4081" }}>テスト</h1>
-      <div style={{ fontSize: "24px", margin: "20px 0" }}>
+      <h1
+        style={{
+          color: "var(--primary)",
+          fontSize: "3rem",
+          marginBottom: "20px",
+        }}
+      >
+        テスト
+      </h1>
+      <div
+        style={{
+          color: "var(--gray-700)",
+          fontSize: "2.5rem",
+          margin: "20px 0",
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
         {currentPhrase.japanese}
       </div>
       {showAnswer && (
-        <div style={{ fontSize: "20px", margin: "20px 0", color: "#000" }}>
+        <div
+          style={{
+            fontSize: "1.1rem",
+            margin: "20px 0",
+            color: "var(--foreground)",
+          }}
+        >
           {currentPhrase.english}
         </div>
       )}
       <div>
         <button
-          onClick={() => setShowAnswer(true)}
+          onClick={() => setShowAnswer(!showAnswer)}
           style={{
-            padding: "10px",
+            padding: "12px",
             margin: "10px",
-            background: "#ff4081",
+            background: "var(--primary-light)",
             color: "#fff",
             border: "none",
-            borderRadius: "4px",
+            borderRadius: "5px",
             cursor: "pointer",
+            fontSize: "1.1rem",
           }}
         >
           正解を確認する
@@ -98,20 +121,27 @@ const Test: React.FC = () => {
         <button
           onClick={fetchPhrase}
           style={{
-            padding: "10px",
+            padding: "12px",
             margin: "10px",
-            background: "#4caf50",
+            background: "var(--success)",
             color: "#fff",
             border: "none",
-            borderRadius: "4px",
+            borderRadius: "5px",
             cursor: "pointer",
+            fontSize: "1.1rem",
           }}
         >
           次のフレーズ
         </button>
       </div>
-      <div style={{ marginTop: "20px", fontSize: "14px", color: "#666" }}>
-        {`進捗: ${displayedPhrases.size} / ${allPhrases.length} フレーズ`}
+      <div
+        style={{
+          marginTop: "20px",
+          fontSize: "1rem",
+          color: "var(--gray-600)",
+        }}
+      >
+        {`${displayedPhrases.size} / ${allPhrases.length}`}
       </div>
     </div>
   );

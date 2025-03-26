@@ -4,10 +4,10 @@
   --background: #ffffff;
   --foreground: #2d3748;
   --primary: #4299e1;
-  --primary-hover: #3182ce;
+  --primary-light: hsl(207, 71%, 70%);
   --secondary: #ed64a6;
   --accent: #f6ad55;
-  --success: #48bb78;
+  --success: hwb(145 43% 16%);
   --error: #f56565;
   --gray-100: #f7fafc;
   --gray-200: #edf2f7;

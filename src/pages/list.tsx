@@ -45,42 +45,105 @@ const List: React.FC = () => {
   if (!data) return <div>読み込み中…</div>;
 
   return (
-    <div style={{ padding: "20px", background: "#fff9c4", minHeight: "100vh" }}>
-      <h1 style={{ color: "#ff4081" }}>登録フレーズ一覧</h1>
+    <div
+      style={{
+        padding: "40px",
+        background: "var(--background)",
+        minHeight: "calc(100vh - 60px)",
+      }}
+    >
+      <h1
+        style={{
+          color: "var(--primary)",
+          fontSize: "3rem",
+          textAlign: "center",
+          marginBottom: "20px",
+        }}
+      >
+        一覧
+      </h1>
       {data.length === 0 ? (
         <p style={{ textAlign: "center", marginTop: "20px" }}>
           登録されているフレーズはありません。
         </p>
       ) : (
-        <table style={{ margin: "0 auto", borderCollapse: "collapse" }}>
-          <thead>
+        <table
+          style={{
+            margin: "0 auto",
+            borderCollapse: "collapse",
+            width: "90%",
+            maxWidth: "1200px",
+          }}
+        >
+          <thead style={{ background: "var(--primary-light)" }}>
             <tr>
-              <th style={{ border: "1px solid #ccc", padding: "8px" }}>
+              <th
+                style={{
+                  border: "1px solid var(--gray-400)",
+                  padding: "12px",
+                  color: "#fff",
+                }}
+              >
                 日本語
               </th>
-              <th style={{ border: "1px solid #ccc", padding: "8px" }}>英語</th>
-              <th style={{ border: "1px solid #ccc", padding: "8px" }}>操作</th>
+              <th
+                style={{
+                  border: "1px solid var(--gray-400)",
+                  padding: "12px",
+                  color: "#fff",
+                }}
+              >
+                英語
+              </th>
+              <th
+                style={{
+                  border: "1px solid var(--gray-400)",
+                  padding: "12px",
+                  width: "120px",
+                  color: "#fff",
+                }}
+              >
+                操作
+              </th>
             </tr>
           </thead>
           <tbody>
             {data.map((phrase: Phrase) => (
               <tr key={phrase.id}>
-                <td style={{ border: "1px solid #ccc", padding: "8px" }}>
+                <td
+                  style={{
+                    border: "1px solid var(--gray-400)",
+                    padding: "12px",
+                  }}
+                >
                   {phrase.japanese}
                 </td>
-                <td style={{ border: "1px solid #ccc", padding: "8px" }}>
+                <td
+                  style={{
+                    border: "1px solid var(--gray-400)",
+                    padding: "12px",
+                  }}
+                >
                   {phrase.english}
                 </td>
-                <td style={{ border: "1px solid #ccc", padding: "8px" }}>
+                <td
+                  style={{
+                    border: "1px solid var(--gray-400)",
+                    padding: "12px",
+                    textAlign: "center", // 中央寄せを追加
+                    width: "120px", // 操作列の幅を固定
+                  }}
+                >
                   <button
                     onClick={() => handleDelete(phrase.id)}
                     style={{
-                      padding: "4px 8px",
-                      background: "#ff4081",
+                      padding: "8px 12px",
+                      background: "var(--error)",
                       color: "#fff",
                       border: "none",
-                      borderRadius: "4px",
+                      borderRadius: "5px",
                       cursor: "pointer",
+                      fontSize: "1rem",
                     }}
                   >
                     削除
