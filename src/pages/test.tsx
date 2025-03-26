@@ -56,8 +56,6 @@ const Test: React.FC = () => {
   }, [allPhrases, currentPhrase, fetchPhrase]);
 
   if (!allPhrases) return <div>読み込み中…</div>;
-  if (allPhrases.length === 0) return <div>フレーズが登録されていません。</div>;
-  if (!currentPhrase) return <div>読み込み中…</div>;
 
   return (
     <div
@@ -77,69 +75,86 @@ const Test: React.FC = () => {
       >
         テスト
       </h1>
-      <div
-        style={{
-          color: "var(--gray-700)",
-          fontSize: "2.5rem",
-          margin: "20px 0",
-          display: "flex",
-          justifyContent: "center",
-        }}
-      >
-        {currentPhrase.japanese}
-      </div>
-      {showAnswer && (
+      {allPhrases.length === 0 ? (
         <div
           style={{
-            fontSize: "1.3rem",
+            color: "var(--gray-700)",
             margin: "20px 0",
-            color: "var(--gray-600)",
+            display: "flex",
+            justifyContent: "center",
           }}
         >
-          {currentPhrase.english}
+          登録されているフレーズはありません。
         </div>
+      ) : !currentPhrase ? (
+        <div>読み込み中…</div>
+      ) : (
+        <>
+          <div
+            style={{
+              color: "var(--gray-700)",
+              fontSize: "2.5rem",
+              margin: "20px 0",
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
+            {currentPhrase.japanese}
+          </div>
+          {showAnswer && (
+            <div
+              style={{
+                fontSize: "1.3rem",
+                margin: "20px 0",
+                color: "var(--gray-600)",
+              }}
+            >
+              {currentPhrase.english}
+            </div>
+          )}
+          <div>
+            <button
+              onClick={() => setShowAnswer(!showAnswer)}
+              style={{
+                padding: "12px",
+                margin: "10px",
+                background: "var(--primary-light)",
+                color: "#fff",
+                border: "none",
+                borderRadius: "5px",
+                cursor: "pointer",
+                fontSize: "1.1rem",
+              }}
+            >
+              正解を見る
+            </button>
+            <button
+              onClick={fetchPhrase}
+              style={{
+                padding: "12px",
+                margin: "10px",
+                background: "var(--success)",
+                color: "#fff",
+                border: "none",
+                borderRadius: "5px",
+                cursor: "pointer",
+                fontSize: "1.1rem",
+              }}
+            >
+              次のフレーズ
+            </button>
+          </div>
+          <div
+            style={{
+              marginTop: "20px",
+              fontSize: "1rem",
+              color: "var(--gray-600)",
+            }}
+          >
+            {`${displayedPhrases.size} / ${allPhrases.length}`}
+          </div>
+        </>
       )}
-      <div>
-        <button
-          onClick={() => setShowAnswer(!showAnswer)}
-          style={{
-            padding: "12px",
-            margin: "10px",
-            background: "var(--primary-light)",
-            color: "#fff",
-            border: "none",
-            borderRadius: "5px",
-            cursor: "pointer",
-            fontSize: "1.1rem",
-          }}
-        >
-          正解を見る
-        </button>
-        <button
-          onClick={fetchPhrase}
-          style={{
-            padding: "12px",
-            margin: "10px",
-            background: "var(--success)",
-            color: "#fff",
-            border: "none",
-            borderRadius: "5px",
-            cursor: "pointer",
-            fontSize: "1.1rem",
-          }}
-        >
-          次のフレーズ
-        </button>
-      </div>
-      <div
-        style={{
-          marginTop: "20px",
-          fontSize: "1rem",
-          color: "var(--gray-600)",
-        }}
-      >
-        {`${displayedPhrases.size} / ${allPhrases.length}`}
-      </div>
     </div>
   );
 };

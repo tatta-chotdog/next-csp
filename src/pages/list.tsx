@@ -63,7 +63,14 @@ const List: React.FC = () => {
         一覧
       </h1>
       {data.length === 0 ? (
-        <p style={{ textAlign: "center", marginTop: "20px" }}>
+        <p
+          style={{
+            color: "var(--gray-700)",
+            margin: "20px 0",
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
           登録されているフレーズはありません。
         </p>
       ) : (
