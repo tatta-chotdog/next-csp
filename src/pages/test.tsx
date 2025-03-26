@@ -94,9 +94,9 @@ const Test: React.FC = () => {
       {showAnswer && (
         <div
           style={{
-            fontSize: "1.1rem",
+            fontSize: "1.3rem",
             margin: "20px 0",
-            color: "var(--foreground)",
+            color: "var(--gray-600)",
           }}
         >
           {currentPhrase.english}
@@ -116,7 +116,7 @@ const Test: React.FC = () => {
             fontSize: "1.1rem",
           }}
         >
-          正解を確認する
+          正解を見る
         </button>
         <button
           onClick={fetchPhrase}
