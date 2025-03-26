@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import useSWR from "swr";
 
 interface Phrase {
@@ -23,40 +23,37 @@ const Test: React.FC = () => {
     new Set()
   );
 
-  const getRandomPhrase = () => {
+  const getRandomPhrase = useCallback(() => {
     if (!allPhrases || allPhrases.length === 0) return null;
 
-    // まだ表示していないフレーズをフィルタリング
     const remainingPhrases = allPhrases.filter(
       (phrase) => !displayedPhrases.has(phrase.id)
     );
 
-    // 全てのフレーズを表示済みの場合、状態をリセット
     if (remainingPhrases.length === 0) {
       setDisplayedPhrases(new Set());
       return allPhrases[Math.floor(Math.random() * allPhrases.length)];
     }
 
-    // 未表示のフレーズからランダムに選択
     return remainingPhrases[
       Math.floor(Math.random() * remainingPhrases.length)
     ];
-  };
+  }, [allPhrases, displayedPhrases]);
 
-  const fetchPhrase = () => {
+  const fetchPhrase = useCallback(() => {
     setShowAnswer(false);
     const phrase = getRandomPhrase();
     if (phrase) {
       setCurrentPhrase(phrase);
       setDisplayedPhrases((prev) => new Set([...prev, phrase.id]));
     }
-  };
+  }, [getRandomPhrase]);
 
   useEffect(() => {
     if (allPhrases && allPhrases.length > 0 && !currentPhrase) {
       fetchPhrase();
     }
-  }, [allPhrases]);
+  }, [allPhrases, currentPhrase, fetchPhrase]);
 
   if (!allPhrases) return <div>読み込み中…</div>;
   if (allPhrases.length === 0) return <div>フレーズが登録されていません。</div>;

@@ -18,9 +18,6 @@
   --gray-700: #4a5568;
   --gray-800: #2d3748;
   --gray-900: #1a202c;
-}
-
-@theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
