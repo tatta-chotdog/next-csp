@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "deploy": "vercel --prod"
   },
   "dependencies": {
     "better-sqlite3": "^11.9.1",
@@ -15,7 +16,8 @@
     "react-dom": "^19.0.0",
     "sqlite": "^5.1.1",
     "sqlite3": "^5.1.7",
-    "swr": "^2.3.3"
+    "swr": "^2.3.3",
+    "vercel": "^41.4.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
