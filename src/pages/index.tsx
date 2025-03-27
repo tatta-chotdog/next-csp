@@ -1,126 +1,85 @@
-import { useState, FormEvent } from "react";
+import { useState } from "react";
 import React from "react";
 
-const Home: React.FC = () => {
-  const [japanese, setJapanese] = useState<string>("");
-  const [english, setEnglish] = useState<string>("");
-  const [message, setMessage] = useState<string>("");
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+export default function Home() {
+  const [japanese, setJapanese] = useState("");
+  const [english, setEnglish] = useState("");
+  const [message, setMessage] = useState("");
+  const [isSuccess, setIsSuccess] = useState(false);
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
+    if (!japanese || !english) {
+      setMessage("日本語と英語の両方を入力してください");
+      setIsSuccess(false);
+      return;
+    }
+
     try {
-      const res = await fetch("/api/phrase", {
+      const response = await fetch("/api/phrase", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({ japanese, english }),
       });
-      if (res.ok) {
-        setMessage("登録成功！");
+
+      if (response.ok) {
+        setMessage("登録が完了しました");
+        setIsSuccess(true);
         setJapanese("");
         setEnglish("");
       } else {
-        setMessage("登録失敗…");
+        const data = await response.json();
+        setMessage(data.message || "登録に失敗しました");
+        setIsSuccess(false);
       }
     } catch {
       setMessage("エラーが発生しました");
-    } finally {
-      setIsSubmitting(false);
+      setIsSuccess(false);
     }
   };
 
   return (
-    <div
-      style={{
-        padding: "40px",
-        minHeight: "calc(100vh - 60px)",
-        background: "var(--background)",
-      }}
-    >
-      <h1
-        style={{
-          color: "var(--primary)",
-          fontSize: "3rem",
-          textAlign: "center",
-          marginBottom: "20px",
-        }}
-      >
-        登録
-      </h1>
-      <form
-        onSubmit={handleSubmit}
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          maxWidth: "600px",
-          margin: "0 auto",
-        }}
-      >
-        <label style={{ fontSize: "1.2rem" }}>
-          日本語:
+    <div className="page-container">
+      <h1 className="page-title">登録</h1>
+      <form onSubmit={handleSubmit} className="register-form">
+        <label className="form-label">
+          日本語：
           <input
             type="text"
             value={japanese}
             onChange={(e) => setJapanese(e.target.value)}
+            className="form-input"
             required
-            style={{
-              margin: "10px 0",
-              padding: "12px",
-              width: "100%",
-              borderRadius: "5px",
-              border: "1px solid var(--gray-400)",
-            }}
           />
         </label>
-        <label style={{ fontSize: "1.2rem" }}>
-          英語:
+
+        <label className="form-label">
+          英語：
           <input
             type="text"
             value={english}
             onChange={(e) => setEnglish(e.target.value)}
+            className="form-input"
             required
-            style={{
-              margin: "10px 0",
-              padding: "12px",
-              width: "100%",
-              borderRadius: "5px",
-              border: "1px solid var(--gray-400)",
-            }}
           />
         </label>
+
         <button
           type="submit"
-          disabled={isSubmitting}
-          style={{
-            padding: "12px",
-            background: isSubmitting
-              ? "var(--gray-400)"
-              : "var(--primary-light)",
-            color: "#fff",
-            border: "none",
-            borderRadius: "5px",
-            cursor: isSubmitting ? "not-allowed" : "pointer",
-            fontSize: "1.2rem",
-            marginTop: "50px",
-          }}
+          disabled={!japanese || !english}
+          className="submit-button"
         >
-          {isSubmitting ? "登録中..." : "登録"}
+          登録
         </button>
+
+        {message && (
+          <p className={`message ${isSuccess ? "success" : "error"}`}>
+            {message}
+          </p>
+        )}
       </form>
-      {message && (
-        <p
-          style={{
-            textAlign: "center",
-            marginTop: "20px",
-            color: message.includes("成功") ? "var(--success)" : "var(--error)",
-          }}
-        >
-          {message}
-        </p>
-      )}
     </div>
   );
-};
-
-export default Home;
+}

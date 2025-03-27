@@ -1,40 +1,22 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import sqlite3 from "sqlite3";
-import { open } from "sqlite";
-import path from "path";
+import { getDB } from "@/lib/db";
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  if (req.method !== "GET") {
-    return res.status(405).json({ error: "Method not allowed" });
-  }
+export default function handler(req: NextApiRequest, res: NextApiResponse) {
+  const db = getDB();
 
   try {
-    // データベース接続
-    const db = await open({
-      filename: path.join(process.cwd(), "src", "database.sqlite"),
-      driver: sqlite3.Database,
-    });
-
-    // 全フレーズを取得
-    const phrases = await db.all("SELECT * FROM phrases");
-
-    if (phrases.length === 0) {
-      return res.status(404).json({ error: "No phrases found" });
+    if (req.method === "GET") {
+      const phrases = db.prepare("SELECT * FROM phrases").all();
+      if (!phrases || phrases.length === 0) {
+        return res.status(404).json({ error: "No phrases found" });
+      }
+      const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
+      res.status(200).json(randomPhrase);
+    } else {
+      res.status(405).json({ error: "Method not allowed" });
     }
-
-    // ランダムなフレーズを選択
-    const randomIndex = Math.floor(Math.random() * phrases.length);
-    const randomPhrase = phrases[randomIndex];
-
-    // データベース接続を閉じる
-    await db.close();
-
-    res.status(200).json(randomPhrase);
   } catch (error) {
-    console.error("Error fetching random phrase:", error);
+    console.error("Error handling request:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 }

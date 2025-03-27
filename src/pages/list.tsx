@@ -1,5 +1,6 @@
 import React from "react";
 import useSWR from "swr";
+import { useRouter } from "next/router";
 
 interface Phrase {
   id: number;
@@ -17,6 +18,43 @@ const fetcher = (url: string): Promise<Phrase[]> =>
 
 const List: React.FC = () => {
   const { data, error, mutate } = useSWR<Phrase[]>("/api/phrase", fetcher);
+  const router = useRouter();
+  const [selectedIds, setSelectedIds] = React.useState<Set<number>>(new Set());
+  const [selectedTestMode, setSelectedTestMode] = React.useState<
+    "ja2en" | "en2ja" | null
+  >(null);
+
+  const toggleSelection = (id: number) => {
+    setSelectedIds((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(id)) {
+        newSet.delete(id);
+      } else {
+        newSet.add(id);
+      }
+      return newSet;
+    });
+  };
+
+  const toggleSelectAll = () => {
+    setSelectedIds((prev) => {
+      if (data && prev.size === data.length) {
+        return new Set();
+      } else {
+        return new Set(data ? data.map((phrase) => phrase.id) : []);
+      }
+    });
+  };
+
+  const handleTestModeSelect = (mode: "ja2en" | "en2ja") => {
+    setSelectedTestMode(mode);
+  };
+
+  const handleTestStart = () => {
+    if (selectedIds.size === 0) return;
+    const ids = Array.from(selectedIds).join(",");
+    router.push(`/test?ids=${ids}&mode=${selectedTestMode}`);
+  };
 
   const handleDelete = async (id: number) => {
     if (!confirm("このフレーズを削除してもよろしいですか？")) {
@@ -41,125 +79,94 @@ const List: React.FC = () => {
     }
   };
 
-  if (error) return <div>エラーが発生しました。</div>;
-  if (!data) return <div>読み込み中…</div>;
+  if (error) return <div className="error-message">エラーが発生しました。</div>;
+  if (!data) return <div className="loading-message">読み込み中…</div>;
 
   return (
-    <div
-      style={{
-        padding: "40px",
-        background: "var(--background)",
-        minHeight: "calc(100vh - 60px)",
-      }}
-    >
-      <h1
-        style={{
-          color: "var(--primary)",
-          fontSize: "3rem",
-          textAlign: "center",
-          marginBottom: "20px",
-        }}
-      >
-        一覧
-      </h1>
+    <div className="page-container">
+      <h1 className="page-title">一覧</h1>
       {data.length === 0 ? (
-        <p
-          style={{
-            color: "var(--gray-700)",
-            margin: "20px 0",
-            display: "flex",
-            justifyContent: "center",
-          }}
-        >
-          登録されているフレーズはありません。
-        </p>
+        <p className="empty-message">登録されているフレーズはありません。</p>
       ) : (
-        <table
-          style={{
-            margin: "0 auto",
-            borderCollapse: "collapse",
-            width: "90%",
-            maxWidth: "1200px",
-          }}
-        >
-          <thead style={{ background: "var(--primary-light)" }}>
-            <tr>
-              <th
-                style={{
-                  border: "1px solid var(--gray-400)",
-                  padding: "12px",
-                  color: "#fff",
-                }}
-              >
-                日本語
-              </th>
-              <th
-                style={{
-                  border: "1px solid var(--gray-400)",
-                  padding: "12px",
-                  color: "#fff",
-                }}
-              >
-                英語
-              </th>
-              <th
-                style={{
-                  border: "1px solid var(--gray-400)",
-                  padding: "12px",
-                  width: "120px",
-                  color: "#fff",
-                }}
-              >
-                操作
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((phrase: Phrase) => (
-              <tr key={phrase.id}>
-                <td
-                  style={{
-                    border: "1px solid var(--gray-400)",
-                    padding: "12px",
-                  }}
+        <>
+          <div className="select-all-container">
+            <div className="test-mode-section">
+              <span className="test-mode-label">テスト形式：</span>
+              <div className="test-mode-buttons">
+                <button
+                  onClick={() => handleTestModeSelect("ja2en")}
+                  className={`test-mode-button ${
+                    selectedTestMode === "ja2en" ? "active" : ""
+                  }`}
                 >
-                  {phrase.japanese}
-                </td>
-                <td
-                  style={{
-                    border: "1px solid var(--gray-400)",
-                    padding: "12px",
-                  }}
+                  日本語→英語
+                </button>
+                <button
+                  onClick={() => handleTestModeSelect("en2ja")}
+                  className={`test-mode-button ${
+                    selectedTestMode === "en2ja" ? "active" : ""
+                  }`}
                 >
-                  {phrase.english}
-                </td>
-                <td
-                  style={{
-                    border: "1px solid var(--gray-400)",
-                    padding: "12px",
-                    textAlign: "center", // 中央寄せを追加
-                    width: "120px", // 操作列の幅を固定
-                  }}
-                >
+                  英語→日本語
+                </button>
+                {selectedIds.size > 0 && (
                   <button
-                    onClick={() => handleDelete(phrase.id)}
-                    style={{
-                      padding: "8px 12px",
-                      background: "var(--error)",
-                      color: "#fff",
-                      border: "none",
-                      borderRadius: "5px",
-                      cursor: "pointer",
-                      fontSize: "1rem",
-                    }}
+                    onClick={handleTestStart}
+                    className={`test-start-button ${
+                      selectedIds.size > 0 ? "visible" : ""
+                    }`}
+                    disabled={!selectedTestMode}
                   >
-                    削除
+                    テストする
                   </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                )}
+              </div>
+            </div>
+            <button
+              onClick={toggleSelectAll}
+              className={`select-all-button ${
+                data && selectedIds.size === data.length ? "active" : ""
+              }`}
+            >
+              {selectedIds.size === data.length ? "全解除" : "全選択"}
+            </button>
+          </div>
+          <div className="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th className="checkbox-column">選択</th>
+                  <th>日本語</th>
+                  <th>英語</th>
+                  <th className="action-column">操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.map((phrase: Phrase) => (
+                  <tr key={phrase.id}>
+                    <td className="checkbox-cell">
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.has(phrase.id)}
+                        onChange={() => toggleSelection(phrase.id)}
+                      />
+                    </td>
+                    <td>{phrase.japanese}</td>
+                    <td>{phrase.english}</td>
+                    <td className="action-cell">
+                      <button
+                        onClick={() => handleDelete(phrase.id)}
+                        className="delete-button"
+                      >
+                        削除
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
     </div>
   );

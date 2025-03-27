@@ -1,17 +1,18 @@
-import { NextApiRequest, NextApiResponse } from "next";
+import type { NextApiRequest, NextApiResponse } from "next";
 import { getDB } from "@/lib/db";
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== "GET") {
-    return res.status(405).json({ message: "Method not allowed" });
-  }
+  const db = getDB();
 
   try {
-    const db = getDB();
-    const results = db.prepare("SELECT * FROM phrases ORDER BY id DESC").all();
-    res.status(200).json(results);
+    if (req.method === "GET") {
+      const phrases = db.prepare("SELECT * FROM phrases").all();
+      res.status(200).json(phrases || []);
+    } else {
+      res.status(405).json({ error: "Method not allowed" });
+    }
   } catch (error) {
-    console.error("Error fetching phrases:", error);
-    res.status(500).json({ message: "Internal server error" });
+    console.error("Error handling request:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 }

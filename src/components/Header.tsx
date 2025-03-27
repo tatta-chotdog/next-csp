@@ -3,35 +3,15 @@ import React from "react";
 
 const Header: React.FC = () => {
   return (
-    <header
-      style={{
-        background: "var(--primary)",
-        padding: "10px 20px",
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-      }}
-    >
-      <div style={{ color: "#fff", fontSize: "20px", fontWeight: "bold" }}>
-        英語フレーズアプリ
-      </div>
+    <header className="header">
+      <div className="header-title">英語フレーズアプリ</div>
       <nav>
-        <ul
-          style={{
-            display: "flex",
-            listStyle: "none",
-            margin: 0,
-            padding: 0,
-          }}
-        >
-          <li style={{ marginRight: "15px", color: "#fff" }}>
+        <ul className="header-nav">
+          <li>
             <Link href="/">登録</Link>
           </li>
-          <li style={{ marginRight: "15px", color: "#fff" }}>
+          <li>
             <Link href="/list">一覧</Link>
-          </li>
-          <li style={{ color: "#fff" }}>
-            <Link href="/test">テスト</Link>
           </li>
         </ul>
       </nav>
