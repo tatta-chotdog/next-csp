@@ -1,28 +1,16 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import sqlite3 from "sqlite3";
-import { open } from "sqlite";
-import path from "path";
+import { getDB } from "@/lib/db";
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+export default function handler(req: NextApiRequest, res: NextApiResponse) {
   const { id } = req.query;
 
   if (req.method !== "DELETE") {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  let db;
   try {
-    // データベース接続
-    db = await open({
-      filename: path.join(process.cwd(), "src", "data", "phrases.db"),
-      driver: sqlite3.Database,
-    });
-
-    // フレーズを削除
-    const result = await db.run("DELETE FROM phrases WHERE id = ?", id);
+    const db = getDB();
+    const result = db.prepare("DELETE FROM phrases WHERE id = ?").run(id);
 
     if (result.changes === 0) {
       return res.status(404).json({ error: "Phrase not found" });
@@ -40,9 +28,5 @@ export default async function handler(
             : String(error)
           : undefined,
     });
-  } finally {
-    if (db) {
-      await db.close();
-    }
   }
 }

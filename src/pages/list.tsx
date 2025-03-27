@@ -109,6 +109,18 @@ const List: React.FC = () => {
                 >
                   英語→日本語
                 </button>
+              </div>
+            </div>
+            <div className="action-buttons">
+              <button
+                onClick={toggleSelectAll}
+                className={`select-all-button ${
+                  data && selectedIds.size === data.length ? "active" : ""
+                }`}
+              >
+                {selectedIds.size === data.length ? "全解除" : "全選択"}
+              </button>
+              <div className="test-start-button-container">
                 {selectedIds.size > 0 && (
                   <button
                     onClick={handleTestStart}
@@ -122,14 +134,6 @@ const List: React.FC = () => {
                 )}
               </div>
             </div>
-            <button
-              onClick={toggleSelectAll}
-              className={`select-all-button ${
-                data && selectedIds.size === data.length ? "active" : ""
-              }`}
-            >
-              {selectedIds.size === data.length ? "全解除" : "全選択"}
-            </button>
           </div>
           <div className="table-wrapper">
             <table>
