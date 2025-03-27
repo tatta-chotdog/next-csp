@@ -331,11 +331,11 @@ td {
 }
 
 .test-button.primary {
-  background: var(--primary);
+  background: var(--primary-light);
 }
 
 .test-button.secondary {
-  background: var(--primary-light);
+  background: var(--success);
 }
 
 /* テストページスタイル */
