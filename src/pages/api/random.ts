@@ -1,16 +1,34 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { getDB } from "@/lib/db";
+import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  const db = getDB();
-
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   try {
+    const supabase = createServerSupabaseClient({ req, res });
+
     if (req.method === "GET") {
-      const phrases = db.prepare("SELECT * FROM phrases").all();
-      if (!phrases || phrases.length === 0) {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+
+      const { data, error } = await supabase
+        .from("phrases")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+
+      if (!data || data.length === 0) {
         return res.status(404).json({ error: "No phrases found" });
       }
-      const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
+
+      const randomPhrase = data[Math.floor(Math.random() * data.length)];
       res.status(200).json(randomPhrase);
     } else {
       res.status(405).json({ error: "Method not allowed" });

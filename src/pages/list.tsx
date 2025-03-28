@@ -1,24 +1,27 @@
 import React from "react";
 import useSWR from "swr";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 interface Phrase {
   id: number;
   japanese: string;
   english: string;
+  created_at?: string;
 }
 
 const fetcher = (url: string): Promise<Phrase[]> =>
-  fetch(url).then((res) => {
+  fetch(url).then(async (res) => {
     if (!res.ok) {
       throw new Error("APIエラーが発生しました");
     }
-    return res.json();
+    const data = await res.json();
+    // オブジェクトの場合は配列に変換
+    return Array.isArray(data) ? data : Object.values(data);
   });
 
 const List: React.FC = () => {
-  const { data, error, mutate } = useSWR<Phrase[]>("/api/phrase", fetcher);
   const router = useRouter();
+  const { data, error, mutate } = useSWR<Phrase[]>("/api/phrase", fetcher);
   const [selectedIds, setSelectedIds] = React.useState<Set<number>>(new Set());
   const [selectedTestMode, setSelectedTestMode] = React.useState<
     "ja2en" | "en2ja" | null
@@ -79,7 +82,10 @@ const List: React.FC = () => {
     }
   };
 
-  if (error) return <div className="error-message">エラーが発生しました。</div>;
+  if (error)
+    return (
+      <div className="error-message">エラーが発生しました: {error.message}</div>
+    );
   if (!data) return <div className="loading-message">読み込み中…</div>;
 
   return (
@@ -99,7 +105,7 @@ const List: React.FC = () => {
                     selectedTestMode === "ja2en" ? "active" : ""
                   }`}
                 >
-                  日本語→英語
+                  日本語 → 英語
                 </button>
                 <button
                   onClick={() => handleTestModeSelect("en2ja")}
@@ -107,7 +113,7 @@ const List: React.FC = () => {
                     selectedTestMode === "en2ja" ? "active" : ""
                   }`}
                 >
-                  英語→日本語
+                  英語 → 日本語
                 </button>
               </div>
             </div>
@@ -136,7 +142,7 @@ const List: React.FC = () => {
             </div>
           </div>
           <div className="table-wrapper">
-            <table>
+            <table className="phrase-table">
               <thead>
                 <tr>
                   <th className="checkbox-column">選択</th>
@@ -146,27 +152,29 @@ const List: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {data.map((phrase: Phrase) => (
-                  <tr key={phrase.id}>
-                    <td className="checkbox-cell">
-                      <input
-                        type="checkbox"
-                        checked={selectedIds.has(phrase.id)}
-                        onChange={() => toggleSelection(phrase.id)}
-                      />
-                    </td>
-                    <td>{phrase.japanese}</td>
-                    <td>{phrase.english}</td>
-                    <td className="action-cell">
-                      <button
-                        onClick={() => handleDelete(phrase.id)}
-                        className="delete-button"
-                      >
-                        削除
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                {data.map((phrase) => {
+                  return (
+                    <tr key={phrase.id}>
+                      <td className="checkbox-cell">
+                        <input
+                          type="checkbox"
+                          checked={selectedIds.has(phrase.id)}
+                          onChange={() => toggleSelection(phrase.id)}
+                        />
+                      </td>
+                      <td className="phrase-cell">{phrase.japanese}</td>
+                      <td className="phrase-cell">{phrase.english}</td>
+                      <td className="action-cell">
+                        <button
+                          onClick={() => handleDelete(phrase.id)}
+                          className="delete-button"
+                        >
+                          削除
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

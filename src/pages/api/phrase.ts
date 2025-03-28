@@ -1,14 +1,42 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { getDB } from "@/lib/db";
+import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  const db = getDB();
-
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   try {
+    const supabase = createServerSupabaseClient({ req, res });
+
     if (req.method === "GET") {
-      const phrases = db.prepare("SELECT * FROM phrases").all();
-      res.status(200).json(phrases || []);
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+
+      const { data, error } = await supabase
+        .from("phrases")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error("Supabase error:", error);
+        throw error;
+      }
+
+      res.status(200).json(data || []);
     } else if (req.method === "POST") {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+
       const { japanese, english } = req.body;
 
       if (!japanese || !english) {
@@ -17,20 +45,44 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
           .json({ error: "Japanese and English text are required" });
       }
 
-      const result = db
-        .prepare("INSERT INTO phrases (japanese, english) VALUES (?, ?)")
-        .run(japanese, english);
-      res.status(201).json({ id: result.lastInsertRowid, japanese, english });
+      const { data, error } = await supabase
+        .from("phrases")
+        .insert([{ japanese, english }])
+        .select()
+        .single();
+
+      if (error) {
+        console.error("Supabase error:", error);
+        return res.status(500).json({
+          error: "Database error",
+          details: error.message,
+        });
+      }
+
+      res.status(201).json(data);
     } else if (req.method === "DELETE") {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+
       const { id } = req.query;
 
       if (!id) {
         return res.status(400).json({ error: "ID is required" });
       }
 
-      const result = db.prepare("DELETE FROM phrases WHERE id = ?").run(id);
-      if (result.changes === 0) {
-        return res.status(404).json({ error: "Phrase not found" });
+      const { error } = await supabase.from("phrases").delete().eq("id", id);
+
+      if (error) {
+        console.error("Supabase error:", error);
+        return res.status(500).json({
+          error: "Database error",
+          details: error.message,
+        });
       }
 
       res.status(200).json({ message: "Phrase deleted successfully" });
@@ -39,6 +91,9 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     }
   } catch (error) {
     console.error("Error handling request:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({
+      error: "Internal Server Error",
+      details: error instanceof Error ? error.message : String(error),
+    });
   }
 }
