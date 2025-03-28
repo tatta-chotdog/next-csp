@@ -156,17 +156,13 @@ const List: React.FC = () => {
                 {selectedIds.size === data.length ? "全解除" : "全選択"}
               </button>
               <div className="test-start-button-container">
-                {selectedIds.size > 0 && (
-                  <button
-                    onClick={handleTestStart}
-                    className={`test-start-button ${
-                      selectedIds.size > 0 ? "visible" : ""
-                    }`}
-                    disabled={!selectedTestMode}
-                  >
-                    テストする
-                  </button>
-                )}
+                <button
+                  onClick={handleTestStart}
+                  className="test-start-button"
+                  disabled={selectedIds.size === 0 || !selectedTestMode}
+                >
+                  テストする
+                </button>
               </div>
             </div>
           </div>

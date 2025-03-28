@@ -93,7 +93,7 @@ button:disabled:hover {
 table {
   width: 100%;
   border-collapse: collapse;
-  white-space: nowrap;
+  white-space: normal;
   table-layout: fixed;
 }
 
@@ -104,14 +104,16 @@ th {
   padding: 12px;
   text-align: left;
   border-bottom: 2px solid var(--gray-300);
+  word-break: break-word;
 }
 
 td {
   padding: 12px;
   border-bottom: 1px solid var(--gray-300);
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow: visible;
+  word-break: break-word;
   color: var(--gray-800);
+  white-space: normal;
 }
 
 .checkbox-column {
@@ -125,8 +127,9 @@ td {
 }
 
 .phrase-cell {
-  width: calc((100% - 180px) / 2); /* 残りの幅を日本語と英語で均等に分割 */
+  width: calc((100% - 180px) / 2);
   padding: 12px 20px;
+  min-width: 120px;
 }
 
 .checkbox-cell,
@@ -144,10 +147,16 @@ td {
   .table-wrapper {
     margin: 10px;
     width: calc(100% - 20px);
+    overflow-x: auto;
+  }
+
+  table {
+    min-width: 500px;
   }
 
   .phrase-cell {
     padding: 12px 10px;
+    min-width: 100px;
   }
 
   th,
@@ -166,6 +175,7 @@ td {
   align-items: center;
   width: 100%;
   box-sizing: border-box;
+  flex-wrap: nowrap;
 }
 
 .header-title {
@@ -173,6 +183,7 @@ td {
   font-size: 20px;
   font-weight: bold;
   margin: 0;
+  white-space: nowrap;
 }
 
 .header-nav {
@@ -182,6 +193,7 @@ td {
   padding: 0;
   gap: 20px;
   align-items: center;
+  flex-wrap: nowrap;
 }
 
 .header-nav li {
@@ -303,14 +315,21 @@ td {
   width: 100px;
   position: absolute;
   right: 0;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
+  transition: opacity 0.3s ease, background-color 0.3s ease;
 }
 
-.test-start-button.visible {
-  opacity: 1;
-  visibility: visible;
+.test-start-button:disabled {
+  background: color-mix(in srgb, var(--success) 70%, black);
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.test-start-button:disabled:hover {
+  opacity: 0.7;
+  transform: none;
+  box-shadow: none;
 }
 
 .select-all-button {
@@ -329,6 +348,24 @@ td {
 @media (max-width: 768px) {
   .header {
     padding: 10px 15px;
+  }
+
+  .header-title {
+    font-size: 16px;
+  }
+
+  .header-nav {
+    gap: 10px;
+  }
+
+  .header-nav a {
+    padding: 6px 8px;
+    font-size: 14px;
+  }
+
+  .auth-button {
+    padding: 6px 8px;
+    font-size: 14px;
   }
 
   .select-all-container {
