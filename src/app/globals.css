@@ -33,6 +33,10 @@ body {
   background: var(--background);
   color: var(--foreground);
   line-height: 1.6;
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 /* 共通のボタンスタイル */
@@ -79,15 +83,18 @@ button:disabled:hover {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   margin-bottom: 20px;
-  background: #fff;
+  background: #ffffff;
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 1200px;
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
   white-space: nowrap;
+  table-layout: fixed;
 }
 
 th {
@@ -102,12 +109,51 @@ th {
 td {
   padding: 12px;
   border-bottom: 1px solid var(--gray-300);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--gray-800);
+}
+
+.checkbox-column {
+  width: 80px;
+  text-align: center;
+}
+
+.action-column {
+  width: 100px;
+  text-align: center;
+}
+
+.phrase-cell {
+  width: calc((100% - 180px) / 2); /* 残りの幅を日本語と英語で均等に分割 */
+  padding: 12px 20px;
+}
+
+.checkbox-cell,
+.action-cell {
+  text-align: center;
+  padding: 12px;
 }
 
 /* モバイル対応 */
-@media (max-width: 600px) {
+@media (max-width: 768px) {
+  .table-container {
+    padding: 0 10px;
+  }
+
   .table-wrapper {
-    white-space: nowrap;
+    margin: 10px;
+    width: calc(100% - 20px);
+  }
+
+  .phrase-cell {
+    padding: 12px 10px;
+  }
+
+  th,
+  td {
+    padding: 10px;
+    font-size: 0.9rem;
   }
 }
 
@@ -119,6 +165,7 @@ td {
   justify-content: space-between;
   align-items: center;
   width: 100%;
+  box-sizing: border-box;
 }
 
 .header-title {
@@ -134,26 +181,44 @@ td {
   margin: 0;
   padding: 0;
   gap: 20px;
+  align-items: center;
 }
 
 .header-nav li {
   color: #fff;
+  display: flex;
+  align-items: center;
+  height: 100%;
 }
 
 .header-nav a {
   color: #fff;
   text-decoration: none;
+  padding: 8px 12px;
 }
 
 .header-nav a:hover {
   text-decoration: underline;
 }
 
+.auth-button {
+  background: transparent;
+  border: 1px solid white;
+  padding: 8px 12px;
+  height: 100%;
+}
+
 /* ページ共通スタイル */
 .page-container {
   padding: 40px 20px;
-  min-height: calc(100vh - 60px);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
   background: var(--background);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .page-title {
@@ -163,13 +228,19 @@ td {
   margin-bottom: 20px;
 }
 
+.welcome-message {
+  text-align: center;
+  color: var(--foreground);
+  font-size: 1.2rem;
+  margin-top: 2rem;
+}
+
 .error-message,
 .loading-message,
 .empty-message {
   color: var(--gray-700);
   margin: 20px 0;
-  display: flex;
-  justify-content: center;
+  text-align: center;
 }
 
 /* 一覧ページスタイル */
@@ -191,7 +262,7 @@ td {
 }
 
 .test-mode-label {
-  color: var(--gray-700);
+  color: var(--gray-400);
   font-size: 1rem;
   white-space: nowrap;
 }
@@ -306,21 +377,6 @@ td {
   }
 }
 
-.checkbox-column {
-  width: 60px;
-  text-align: center;
-}
-
-.action-column {
-  width: 120px;
-  text-align: center;
-}
-
-.checkbox-cell,
-.action-cell {
-  text-align: center;
-}
-
 .test-buttons-container {
   text-align: center;
   margin-top: 20px;
@@ -340,7 +396,7 @@ td {
 
 /* テストページスタイル */
 .question-text {
-  color: var(--gray-700);
+  color: var(--gray-300);
   font-size: 2.5rem;
   margin: 20px 0;
   display: flex;
@@ -350,7 +406,7 @@ td {
 .answer-text {
   font-size: 1.3rem;
   margin: 20px 0;
-  color: var(--gray-600);
+  color: var(--gray-400);
   display: flex;
   justify-content: center;
 }
@@ -370,39 +426,31 @@ td {
 
 /* 登録ページスタイル */
 .register-form {
-  display: flex;
-  flex-direction: column;
+  width: 100%;
   max-width: 600px;
   margin: 0 auto;
-  padding: 0 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .form-label {
-  font-size: 1.2rem;
+  display: block;
+  margin-bottom: 5px;
 }
 
 .form-input {
-  margin: 10px 0;
-  padding: 12px;
   width: 100%;
-  border-radius: 5px;
-  border: 1px solid var(--gray-400);
+  padding: 8px;
+  border: 1px solid var(--gray-300);
+  border-radius: 4px;
+  margin-top: 5px;
 }
 
 .submit-button {
+  width: 100%;
   padding: 12px;
-  background: var(--primary-light);
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 1.2rem;
-  margin-top: 50px;
-}
-
-.submit-button:disabled {
-  background: var(--gray-400);
-  cursor: not-allowed;
+  margin-top: 20px;
 }
 
 .message {

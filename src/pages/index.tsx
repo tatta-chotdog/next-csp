@@ -1,7 +1,10 @@
 import { useState } from "react";
 import React from "react";
+import { useAuth } from "../lib/AuthContext";
+import { supabase } from "../lib/supabase";
 
 export default function Home() {
+  const { user, loading } = useAuth();
   const [japanese, setJapanese] = useState("");
   const [english, setEnglish] = useState("");
   const [message, setMessage] = useState("");
@@ -15,30 +18,48 @@ export default function Home() {
       return;
     }
 
-    try {
-      const response = await fetch("/api/phrase", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ japanese, english }),
-      });
+    if (!user) {
+      setMessage("ログインが必要です");
+      setIsSuccess(false);
+      return;
+    }
 
-      if (response.ok) {
-        setMessage("登録が完了しました");
-        setIsSuccess(true);
-        setJapanese("");
-        setEnglish("");
-      } else {
-        const data = await response.json();
-        setMessage(data.message || "登録に失敗しました");
-        setIsSuccess(false);
-      }
-    } catch {
+    try {
+      const { error } = await supabase.from("phrases").insert([
+        {
+          japanese,
+          english,
+          user_id: user.id,
+        },
+      ]);
+
+      if (error) throw error;
+
+      setMessage("登録が完了しました");
+      setIsSuccess(true);
+      setJapanese("");
+      setEnglish("");
+    } catch (error) {
+      console.error("Error:", error);
       setMessage("エラーが発生しました");
       setIsSuccess(false);
     }
   };
+
+  if (loading) {
+    return <div className="page-container">Loading...</div>;
+  }
+
+  if (!user) {
+    return (
+      <div className="page-container">
+        <h1 className="page-title">ようこそ</h1>
+        <p className="welcome-message">
+          英語フレーズアプリを使用するには、Googleアカウントでログインしてください。
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="page-container">

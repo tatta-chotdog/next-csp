@@ -1,27 +1,48 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import useSWR from "swr";
 import { useRouter } from "next/router";
+import { useAuth } from "../lib/AuthContext";
+import { supabase } from "../lib/supabase";
 
 interface Phrase {
   id: number;
   japanese: string;
   english: string;
+  user_id: string;
 }
 
-const fetcher = (url: string): Promise<Phrase[]> =>
-  fetch(url).then((res) => {
-    if (!res.ok) {
-      throw new Error("APIエラーが発生しました");
-    }
-    return res.json();
-  });
-
 const Test: React.FC = () => {
-  const { data: allPhrases } = useSWR<Phrase[]>("/api/phrase", fetcher);
   const router = useRouter();
+  const { user, loading } = useAuth();
+  const [allPhrases, setAllPhrases] = useState<Phrase[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [testMode, setTestMode] = useState<"ja2en" | "en2ja">("ja2en");
+
+  // フレーズデータの取得
+  useEffect(() => {
+    const fetchPhrases = async () => {
+      if (!user) return;
+
+      try {
+        const { data, error } = await supabase
+          .from("phrases")
+          .select("*")
+          .eq("user_id", user.id);
+
+        if (error) throw error;
+        setAllPhrases(data || []);
+      } catch (err) {
+        console.error("Error fetching phrases:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (user) {
+      fetchPhrases();
+    }
+  }, [user]);
+
   const phrasesToTest = useMemo(() => {
-    if (!allPhrases) return [];
     if (router.query.ids) {
       const ids = (router.query.ids as string).split(",").map(Number);
       return allPhrases.filter((p) => ids.includes(p.id));
@@ -77,7 +98,20 @@ const Test: React.FC = () => {
     }
   }, [phrasesToTest, currentPhrase, fetchPhrase]);
 
-  if (!allPhrases) return <div className="loading-message">読み込み中…</div>;
+  if (loading || isLoading) {
+    return <div className="loading-message">読み込み中…</div>;
+  }
+
+  if (!user) {
+    return (
+      <div className="page-container">
+        <h1 className="page-title">アクセス制限</h1>
+        <p className="error-message">
+          テスト機能を使用するには、ログインが必要です。
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="page-container">

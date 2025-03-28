@@ -1,31 +1,46 @@
 import React from "react";
-import useSWR from "swr";
 import { useRouter } from "next/navigation";
+import { useAuth } from "../lib/AuthContext";
+import { supabase } from "../lib/supabase";
 
 interface Phrase {
   id: number;
   japanese: string;
   english: string;
   created_at?: string;
+  user_id: string;
 }
-
-const fetcher = (url: string): Promise<Phrase[]> =>
-  fetch(url).then(async (res) => {
-    if (!res.ok) {
-      throw new Error("APIエラーが発生しました");
-    }
-    const data = await res.json();
-    // オブジェクトの場合は配列に変換
-    return Array.isArray(data) ? data : Object.values(data);
-  });
 
 const List: React.FC = () => {
   const router = useRouter();
-  const { data, error, mutate } = useSWR<Phrase[]>("/api/phrase", fetcher);
+  const { user, loading } = useAuth();
+  const [data, setData] = React.useState<Phrase[]>([]);
+  const [error, setError] = React.useState<Error | null>(null);
   const [selectedIds, setSelectedIds] = React.useState<Set<number>>(new Set());
   const [selectedTestMode, setSelectedTestMode] = React.useState<
     "ja2en" | "en2ja" | null
   >(null);
+
+  React.useEffect(() => {
+    const fetchPhrases = async () => {
+      if (!user) return;
+
+      try {
+        const { data: phrases, error } = await supabase
+          .from("phrases")
+          .select("*")
+          .eq("user_id", user.id);
+
+        if (error) throw error;
+        setData(phrases || []);
+      } catch (err) {
+        console.error("Error fetching phrases:", err);
+        setError(err as Error);
+      }
+    };
+
+    fetchPhrases();
+  }, [user]);
 
   const toggleSelection = (id: number) => {
     setSelectedIds((prev) => {
@@ -65,28 +80,42 @@ const List: React.FC = () => {
     }
 
     try {
-      const res = await fetch(`/api/phrase?id=${id}`, {
-        method: "DELETE",
-      });
+      const { error } = await supabase
+        .from("phrases")
+        .delete()
+        .eq("id", id)
+        .eq("user_id", user?.id);
 
-      if (res.ok) {
-        // 一覧を更新
-        mutate();
-      } else {
-        const error = await res.json();
-        alert(error.error || "削除に失敗しました。");
-      }
+      if (error) throw error;
+
+      // 一覧を更新
+      setData(data.filter((phrase) => phrase.id !== id));
     } catch (error) {
       console.error("Error deleting phrase:", error);
       alert("削除中にエラーが発生しました。");
     }
   };
 
-  if (error)
+  if (loading) {
+    return <div className="loading-message">読み込み中…</div>;
+  }
+
+  if (!user) {
+    return (
+      <div className="page-container">
+        <h1 className="page-title">アクセス制限</h1>
+        <p className="error-message">
+          一覧を表示するには、ログインが必要です。
+        </p>
+      </div>
+    );
+  }
+
+  if (error) {
     return (
       <div className="error-message">エラーが発生しました: {error.message}</div>
     );
-  if (!data) return <div className="loading-message">読み込み中…</div>;
+  }
 
   return (
     <div className="page-container">
