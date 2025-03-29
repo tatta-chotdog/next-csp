@@ -13,6 +13,15 @@ const ALLOWED_REDIRECT_HOSTS = [
   "https://*.supabase.co",
 ];
 
+// 認証をスキップするパス
+const PUBLIC_PATHS = [
+  "/_next",
+  "/static",
+  "/favicon.ico",
+  "/auth/callback",
+  "/api/auth",
+];
+
 export function middleware(request: NextRequest) {
   const referer = request.headers.get("referer");
   const userAgent = request.headers.get("user-agent");
@@ -20,11 +29,7 @@ export function middleware(request: NextRequest) {
   // 特定のプロトコルやパスは処理をスキップ
   if (
     request.url.startsWith("chrome-error://") ||
-    request.nextUrl.pathname.startsWith("/_next/") ||
-    request.nextUrl.pathname === "/favicon.ico" ||
-    request.nextUrl.pathname.startsWith("/static/") ||
-    request.nextUrl.pathname.startsWith("/auth/") || // 認証関連のパスをスキップ
-    request.nextUrl.pathname.startsWith("/api/auth") // 認証APIをスキップ
+    PUBLIC_PATHS.some((path) => request.nextUrl.pathname.startsWith(path))
   ) {
     return NextResponse.next();
   }
