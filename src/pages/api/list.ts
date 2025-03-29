@@ -1,12 +1,13 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
+import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
+import { cookies } from "next/headers";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
   try {
-    const supabase = createServerSupabaseClient({ req, res });
+    const supabase = createRouteHandlerClient({ cookies });
 
     if (req.method === "GET") {
       const {
