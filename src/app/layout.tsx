@@ -22,8 +22,8 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Next.js App",
-  description: "A modern and friendly Next.js application",
+  title: "PhraseUp",
+  description: "英語フレーズを登録・テストできるアプリケーション",
 };
 
 export default function RootLayout({
@@ -42,7 +42,7 @@ export default function RootLayout({
             <div className="container flex h-14 items-center">
               <div className="mr-4 flex">
                 <Link className="mr-6 flex items-center space-x-2" href="/">
-                  <span className="font-bold text-xl">Next.js App</span>
+                  <span className="font-bold text-xl">PhraseUp</span>
                 </Link>
               </div>
             </div>
