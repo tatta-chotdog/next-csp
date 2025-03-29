@@ -43,7 +43,7 @@ const Header: React.FC = () => {
               </li>
               <li>
                 <button onClick={handleSignOut} className="auth-button">
-                  ログアウト
+                  Logout
                 </button>
               </li>
             </>
@@ -56,7 +56,7 @@ const Header: React.FC = () => {
                   width={20}
                   height={20}
                 />
-                ログイン
+                Login
               </button>
             </li>
           )}
