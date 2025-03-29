@@ -64,7 +64,7 @@ export default function Home() {
       <h1 className="page-title">登録</h1>
       <form onSubmit={handleSubmit} className="register-form">
         <label className="form-label">
-          日本語：
+          日本語
           <input
             type="text"
             value={japanese}
@@ -75,7 +75,7 @@ export default function Home() {
         </label>
 
         <label className="form-label">
-          英語：
+          英語
           <input
             type="text"
             value={english}

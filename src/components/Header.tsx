@@ -2,10 +2,11 @@ import Link from "next/link";
 import Image from "next/image";
 import React from "react";
 import { useAuth } from "../lib/AuthContext";
-import { supabase } from "../lib/supabase";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 const Header: React.FC = () => {
   const { user } = useAuth();
+  const supabase = createClientComponentClient();
 
   const handleSignIn = async () => {
     await supabase.auth.signInWithOAuth({
@@ -17,7 +18,12 @@ const Header: React.FC = () => {
   };
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
+    try {
+      await supabase.auth.signOut();
+      window.location.href = "/";
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
   };
 
   return (
