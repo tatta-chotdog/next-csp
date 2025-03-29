@@ -2,6 +2,7 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../lib/AuthContext";
 import { supabase } from "../lib/supabase";
+import Welcome from "../components/Welcome";
 
 interface Phrase {
   id: number;
@@ -103,10 +104,7 @@ const List: React.FC = () => {
   if (!user) {
     return (
       <div className="page-container">
-        <h1 className="page-title">アクセス制限</h1>
-        <p className="error-message">
-          一覧を表示するには、ログインが必要です。
-        </p>
+        <Welcome />
       </div>
     );
   }
@@ -126,7 +124,7 @@ const List: React.FC = () => {
         <>
           <div className="select-all-container">
             <div className="test-mode-section">
-              <span className="test-mode-label">テスト形式：</span>
+              <span className="test-mode-label">テスト形式</span>
               <div className="test-mode-buttons">
                 <button
                   onClick={() => handleTestModeSelect("ja2en")}
@@ -178,20 +176,39 @@ const List: React.FC = () => {
               </thead>
               <tbody>
                 {data.map((phrase) => {
+                  const isSelected = selectedIds.has(phrase.id);
                   return (
-                    <tr key={phrase.id}>
+                    <tr
+                      key={phrase.id}
+                      className={`clickable ${isSelected ? "selected" : ""}`}
+                      onClick={(e) => {
+                        // 削除ボタンのクリックは無視
+                        if (
+                          e.target instanceof HTMLElement &&
+                          (e.target.closest(".action-cell") ||
+                            e.target.closest(".delete-button"))
+                        ) {
+                          return;
+                        }
+                        toggleSelection(phrase.id);
+                      }}
+                    >
                       <td className="checkbox-cell">
                         <input
                           type="checkbox"
-                          checked={selectedIds.has(phrase.id)}
+                          checked={isSelected}
                           onChange={() => toggleSelection(phrase.id)}
+                          onClick={(e) => e.stopPropagation()}
                         />
                       </td>
                       <td className="phrase-cell">{phrase.japanese}</td>
                       <td className="phrase-cell">{phrase.english}</td>
                       <td className="action-cell">
                         <button
-                          onClick={() => handleDelete(phrase.id)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete(phrase.id);
+                          }}
                           className="delete-button"
                         >
                           削除

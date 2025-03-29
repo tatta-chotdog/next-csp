@@ -105,15 +105,50 @@ th {
   text-align: left;
   border-bottom: 2px solid var(--gray-300);
   word-break: break-word;
+  border-right: 1px solid var(--gray-300);
+}
+
+th.action-column {
+  text-align: center;
+}
+
+th:last-child {
+  border-right: none;
 }
 
 td {
   padding: 12px;
   border-bottom: 1px solid var(--gray-300);
+  border-right: 1px solid var(--gray-300);
   overflow: visible;
   word-break: break-word;
   color: var(--gray-800);
   white-space: normal;
+}
+
+td:last-child {
+  border-right: none;
+}
+
+tr.clickable {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+tr.clickable:hover {
+  background-color: var(--gray-100);
+}
+
+tr.clickable.selected {
+  background-color: color-mix(in srgb, var(--primary) 10%, transparent);
+}
+
+tr.clickable.selected:hover {
+  background-color: color-mix(in srgb, var(--primary) 15%, transparent);
+}
+
+.action-cell {
+  cursor: default;
 }
 
 .checkbox-column {
@@ -122,12 +157,12 @@ td {
 }
 
 .action-column {
-  width: 100px;
+  width: 80px;
   text-align: center;
 }
 
 .phrase-cell {
-  width: calc((100% - 180px) / 2);
+  width: calc((100% - 160px) / 2);
   padding: 12px 20px;
   min-width: 120px;
 }
@@ -138,10 +173,17 @@ td {
   padding: 12px;
 }
 
+.delete-button {
+  background: var(--error);
+  padding: 6px 12px;
+  font-size: 0.9rem;
+  width: 60px;
+}
+
 /* モバイル対応 */
 @media (max-width: 768px) {
   .table-container {
-    padding: 0 10px;
+    padding: 0 15px;
   }
 
   .table-wrapper {
@@ -184,6 +226,12 @@ td {
   font-weight: bold;
   margin: 0;
   white-space: nowrap;
+  text-decoration: none;
+  transition: opacity 0.3s ease;
+}
+
+.header-title:hover {
+  opacity: 0.9;
 }
 
 .header-nav {
@@ -218,6 +266,21 @@ td {
   border: 1px solid white;
   padding: 8px 12px;
   height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+.auth-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.auth-button img {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: white;
 }
 
 /* ページ共通スタイル */
@@ -260,8 +323,7 @@ td {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto 20px;
-  padding: 0;
-  padding-right: 20px;
+  padding: 0 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -339,12 +401,6 @@ td {
   margin-right: 10px;
 }
 
-.delete-button {
-  background: var(--error);
-  padding: 6px 12px;
-  font-size: 0.9rem;
-}
-
 @media (max-width: 768px) {
   .header {
     padding: 10px 15px;
@@ -369,6 +425,7 @@ td {
   }
 
   .select-all-container {
+    padding: 0 15px;
     flex-direction: column;
     gap: 20px;
   }
@@ -537,5 +594,70 @@ td {
   button {
     padding: 8px;
     font-size: 0.9rem;
+  }
+}
+
+/* 未ログイン時のウェルカムスタイル */
+.welcome-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.welcome-title {
+  color: var(--primary);
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  font-weight: bold;
+}
+
+.welcome-description {
+  color: var(--gray-400);
+  font-size: 1.2rem;
+  line-height: 1.8;
+  margin-bottom: 2rem;
+}
+
+.feature-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  margin: 3rem 0;
+}
+
+.feature-item {
+  padding: 1.5rem;
+  background: var(--gray-100);
+  border-radius: 12px;
+  text-align: left;
+}
+
+.feature-item h3 {
+  color: var(--primary);
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+.feature-item p {
+  color: var(--gray-700);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+  .welcome-title {
+    font-size: 2rem;
+  }
+
+  .welcome-description {
+    font-size: 1.1rem;
+  }
+
+  .feature-list {
+    grid-template-columns: 1fr;
+    gap: 1rem;
   }
 }

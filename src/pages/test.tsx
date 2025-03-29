@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useRouter } from "next/router";
 import { useAuth } from "../lib/AuthContext";
 import { supabase } from "../lib/supabase";
+import Welcome from "../components/Welcome";
 
 interface Phrase {
   id: number;
@@ -105,10 +106,7 @@ const Test: React.FC = () => {
   if (!user) {
     return (
       <div className="page-container">
-        <h1 className="page-title">アクセス制限</h1>
-        <p className="error-message">
-          テスト機能を使用するには、ログインが必要です。
-        </p>
+        <Welcome />
       </div>
     );
   }

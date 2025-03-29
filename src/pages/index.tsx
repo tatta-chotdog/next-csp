@@ -2,6 +2,7 @@ import { useState } from "react";
 import React from "react";
 import { useAuth } from "../lib/AuthContext";
 import { supabase } from "../lib/supabase";
+import Welcome from "../components/Welcome";
 
 export default function Home() {
   const { user, loading } = useAuth();
@@ -53,10 +54,7 @@ export default function Home() {
   if (!user) {
     return (
       <div className="page-container">
-        <h1 className="page-title">ようこそ</h1>
-        <p className="welcome-message">
-          英語フレーズアプリを使用するには、Googleアカウントでログインしてください。
-        </p>
+        <Welcome />
       </div>
     );
   }

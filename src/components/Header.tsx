@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import React from "react";
 import { useAuth } from "../lib/AuthContext";
 import { supabase } from "../lib/supabase";
@@ -21,7 +22,9 @@ const Header: React.FC = () => {
 
   return (
     <header className="header">
-      <div className="header-title">英語フレーズアプリ</div>
+      <Link href="/" className="header-title">
+        PhraseUp
+      </Link>
       <nav>
         <ul className="header-nav">
           {user ? (
@@ -41,7 +44,13 @@ const Header: React.FC = () => {
           ) : (
             <li>
               <button onClick={handleSignIn} className="auth-button">
-                Googleでログイン
+                <Image
+                  src="/google-icon.png"
+                  alt="Google"
+                  width={20}
+                  height={20}
+                />
+                ログイン
               </button>
             </li>
           )}
