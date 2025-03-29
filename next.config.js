@@ -7,23 +7,17 @@ module.exports = {
           {
             key: "Content-Security-Policy",
             value: [
-              "default-src 'none'",
+              "default-src 'self'",
               "script-src 'self' 'unsafe-inline' blob: https://accounts.google.com https://apis.google.com",
-              "script-src-elem 'self' 'unsafe-inline' blob: https://accounts.google.com https://apis.google.com",
               "style-src 'self' 'unsafe-inline'",
-              "img-src 'self' data: https://*.googleusercontent.com",
+              "img-src 'self' data:",
               "font-src 'self'",
-              "connect-src 'self' https://*.supabase.co https://supabase.co https://accounts.google.com https://apis.google.com",
-              "frame-src 'self' https://accounts.google.com",
-              "manifest-src 'self'",
-              "object-src 'none'",
-              "base-uri 'none'",
-              "form-action 'self'",
+              "connect-src 'self' https://*.supabase.co https://supabase.co",
               "frame-ancestors 'none'",
-              "report-uri /api/csp-report",
-              "upgrade-insecure-requests",
+              "form-action 'self'",
+              "base-uri 'self'",
               "block-all-mixed-content",
-              "require-trusted-types-for 'script'",
+              "upgrade-insecure-requests",
             ].join("; "),
           },
           {
@@ -40,24 +34,16 @@ module.exports = {
           },
           {
             key: "Referrer-Policy",
-            value: "no-referrer",
+            value: "strict-origin-when-cross-origin",
           },
           {
             key: "Permissions-Policy",
             value:
-              "camera=(), microphone=(), geolocation=(), interest-cohort=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=(), autoplay=(), document-domain=(), encrypted-media=(), fullscreen=(), picture-in-picture=(), sync-xhr=()",
+              "camera=(), microphone=(), geolocation=(), interest-cohort=()",
           },
           {
-            key: "Cross-Origin-Opener-Policy",
-            value: "same-origin",
-          },
-          {
-            key: "Cross-Origin-Embedder-Policy",
-            value: "require-corp",
-          },
-          {
-            key: "Cross-Origin-Resource-Policy",
-            value: "same-origin",
+            key: "Strict-Transport-Security",
+            value: "max-age=31536000; includeSubDomains",
           },
         ],
       },
